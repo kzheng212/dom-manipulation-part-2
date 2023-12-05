@@ -93,6 +93,7 @@ console.log(topMenuLinks);
 // e = event
 function handleTopMenuClick(e) {
   e.preventDefault();
+  // If selected element is not an anchor tag
   if (e.target.tagName !== "A") return;
   else {
     console.log(e.target.text);
@@ -139,9 +140,12 @@ function toggleSubLinks(e) {
     // Pass tempObj to buildSubMenu
     buildSubMenu(tempObj);
   }
-  // Otherwise, don't show the subMenuEl
+  // Otherwise, don't show the subMenuEl if subLinks key does not exist
+  // Ex. const menuLinks = [{ text: "about", href: "/about" }, ...];
   else {
     subMenuEl.style.top = "0";
+    // Generates HeadingOne with <h1>About</h1>
+    headingOneGenerator(e);
   }
 }
 
@@ -157,7 +161,7 @@ function buildSubMenu(tempObj) {
   tempObj.subLinks.forEach((obj) => {
     const newSubLink = document.createElement("a");
     newSubLink.href = obj.href;
-    newSubLink.text = obj.text;
+    newSubLink.textContent = obj.text;
     subMenuEl.appendChild(newSubLink);
   });
 }
@@ -165,5 +169,40 @@ function buildSubMenu(tempObj) {
 function clearSubMenu() {
   while (subMenuEl.firstChild) {
     subMenuEl.removeChild(subMenuEl.firstChild);
+  }
+}
+
+subMenuEl.addEventListener("click", (e) => {
+  e.preventDefault();
+  // If not a subLink
+  if (!e.target.tagName === "A") return;
+  // If subLink:
+  else {
+    console.log(e.target.text);
+    // Hides subMenuEl
+    subMenuEl.style.top = "0";
+    // Removes .active in the collection of topMenuLinks
+    topMenuLinks.forEach((link) => link.classList.remove("active"));
+    /* Updates contents of mainEL with an h1 containing clicked upon 
+    subMenuEl anchor element text */
+    headingOneGenerator(e);
+  }
+});
+
+function headingOneGenerator(e) {
+  const newHeadingOneContent = e.target.textContent;
+  // console.log(newHeadingOneContent);
+  /* Only topMenuLinks without subLinks "In this case: about"
+  will print out topMenuLinks textContent with a captialized first 
+  letter of the first word */
+  if (newHeadingOneContent === "about") {
+    const modifiedHeadingOneContent =
+      newHeadingOneContent[0].toUpperCase() + newHeadingOneContent.slice(1);
+    console.log(modifiedHeadingOneContent);
+    mainEl.querySelector("h1").textContent = modifiedHeadingOneContent;
+  }
+  // SubLinks will print lowercase textContent into h1 tag
+  else {
+    mainEl.querySelector("h1").textContent = newHeadingOneContent;
   }
 }
