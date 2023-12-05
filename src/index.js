@@ -16,7 +16,7 @@
 // ];
 
 // P2 - Menu data structure
-var menuLinks = [
+const menuLinks = [
   { text: "about", href: "/about" },
   {
     text: "catalog",
@@ -86,7 +86,7 @@ subMenuEl.classList.add("flex-around");
 subMenuEl.style.position = "absolute";
 subMenuEl.style.top = "0";
 
-// P2.C4
+// P2.C4:
 const topMenuLinks = topMenuEl.querySelectorAll("a");
 console.log(topMenuLinks);
 
@@ -101,20 +101,69 @@ function handleTopMenuClick(e) {
 }
 
 function isActive(e) {
+  // If anchor tag does not have a .active
   if (!e.target.classList.contains("active")) {
+    // Loops thru every anchor link in topMenu
     topMenuLinks.forEach(function (link) {
-      // Removes ".active before selecting a new link"
+      // Removes ".active for all links in topMenu"
       link.classList.remove("active");
     });
     // Adds ".active to selected link"
     e.target.classList.add("active");
+    // O = Order List
+    // For P2.C5.O1:
+    // Check if anchor tag in topMenu has subLinks,
+    //  If so, Toggle subLinks based on active & inactive states
+    //  Else, Don't Toggle
+    toggleSubLinks(e);
   } else {
     // Removes ".active from the current selection that has a .active"
     e.target.classList.remove("active");
+    toggleSubLinks(e);
   }
 }
 
 topMenuEl.addEventListener("click", handleTopMenuClick);
 
-// P2.C5
+// P2.C5:
 
+// Checks if any of the topMenu Anchor Links has an Attribute of subLinks in object
+function toggleSubLinks(e) {
+  // Gather Object that shares the same value (where obj.text === TextContent)
+  // Based on topMenu Anchor Link that was Selection
+  const tempObj = menuLinks.find((obj) => obj.text === e.target.text);
+  console.log(tempObj);
+  // If subLinks key exist in tempObj && selected anchor tag has a .active, show subMenuEl
+  if ("subLinks" in tempObj && e.target.classList.contains("active")) {
+    subMenuEl.style.top = "100%";
+    // Pass tempObj to buildSubMenu
+    buildSubMenu(tempObj);
+  }
+  // Otherwise, don't show the subMenuEl
+  else {
+    subMenuEl.style.top = "0";
+  }
+}
+
+function buildSubMenu(tempObj) {
+  if (subMenuEl.children.length > 0) {
+    // Clears All Existing Content of subMenuEl using forEach
+    // We use forEach for removal here instead of innerHTML
+    // for memory safety reasons
+    clearSubMenu();
+  }
+  // Populate the subMenu with subLinks for each respective topMenuLinks
+  //  with a .active
+  tempObj.subLinks.forEach((obj) => {
+    const newSubLink = document.createElement("a");
+    newSubLink.href = obj.href;
+    newSubLink.text = obj.text;
+    subMenuEl.appendChild(newSubLink);
+  });
+}
+
+function clearSubMenu() {
+  while (subMenuEl.firstChild) {
+    subMenuEl.removeChild(subMenuEl.firstChild);
+  }
+}
